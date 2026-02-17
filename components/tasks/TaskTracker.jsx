@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import TaskBoard from "./TaskBoard";
 import CreateTaskModal from "./CreateTaskModal";
 import Button from "@/components/ui/Button";
 
-export default function TaskTracker() {
+function TaskTrackerInner() {
   const searchParams = useSearchParams();
   const selectedDate = searchParams.get("date") || "";
 
@@ -64,5 +64,13 @@ export default function TaskTracker() {
         selectedDate={selectedDate}
       />
     </div>
+  );
+}
+
+export default function TaskTracker() {
+  return (
+    <Suspense>
+      <TaskTrackerInner />
+    </Suspense>
   );
 }

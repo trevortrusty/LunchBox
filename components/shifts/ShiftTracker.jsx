@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { format } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import ShiftTable from "./ShiftTable";
 import CreateShiftModal from "./CreateShiftModal";
 import Button from "@/components/ui/Button";
 
-export default function ShiftTracker() {
+function ShiftTrackerInner() {
   const searchParams = useSearchParams();
   const selectedDate = searchParams.get("date") || "";
 
@@ -70,5 +70,13 @@ export default function ShiftTracker() {
         onCreated={fetchShifts}
       />
     </div>
+  );
+}
+
+export default function ShiftTracker() {
+  return (
+    <Suspense>
+      <ShiftTrackerInner />
+    </Suspense>
   );
 }
