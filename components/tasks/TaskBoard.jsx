@@ -1,17 +1,17 @@
-import TaskCard from './TaskCard'
+import TaskCard from "./TaskCard";
 
 const COLUMNS = [
-  { status: 'PENDING', label: 'Pending', color: 'border-t-gray-400' },
-  { status: 'IN_PROGRESS', label: 'In Progress', color: 'border-t-purple-500' },
-  { status: 'COMPLETED', label: 'Completed', color: 'border-t-green-500' },
-  { status: 'CANCELLED', label: 'Cancelled', color: 'border-t-red-400' },
-]
+  { status: "PENDING", label: "Pending", color: "border-t-gray-400" },
+  { status: "IN_PROGRESS", label: "In Progress", color: "border-t-purple-500" },
+  { status: "COMPLETED", label: "Completed", color: "border-t-green-500" },
+  { status: "CANCELLED", label: "Cancelled", color: "border-t-red-400" },
+];
 
 export default function TaskBoard({ tasks, onRefresh }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {COLUMNS.map(({ status, label, color }) => {
-        const columnTasks = tasks.filter((t) => t.status === status)
+        const columnTasks = tasks.filter((t) => t.status === status);
         return (
           <div key={status} className={`bg-white rounded-xl border border-gray-200 border-t-4 ${color} overflow-hidden`}>
             <div className="px-4 py-3 border-b border-gray-100">
@@ -30,8 +30,8 @@ export default function TaskBoard({ tasks, onRefresh }) {
               )}
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

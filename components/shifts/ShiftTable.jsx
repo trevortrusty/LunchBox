@@ -1,4 +1,4 @@
-import ShiftRow from './ShiftRow'
+import ShiftRow from "./ShiftRow";
 
 export default function ShiftTable({ shifts, onRefresh }) {
   if (shifts.length === 0) {
@@ -6,7 +6,7 @@ export default function ShiftTable({ shifts, onRefresh }) {
       <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
         <p className="text-gray-400 text-sm">No shifts scheduled for this date.</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -28,5 +28,5 @@ export default function ShiftTable({ shifts, onRefresh }) {
         </tbody>
       </table>
     </div>
-  )
+  );
 }

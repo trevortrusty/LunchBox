@@ -1,6 +1,6 @@
-import RegisterForm from '@/components/auth/RegisterForm'
+import RegisterForm from "@/components/auth/RegisterForm";
 
-export const metadata = { title: 'Register — Lunchbox' }
+export const metadata = { title: "Register — Lunchbox" };
 
 export default function RegisterPage() {
   return (
@@ -13,5 +13,5 @@ export default function RegisterPage() {
         <RegisterForm />
       </div>
     </div>
-  )
+  );
 }

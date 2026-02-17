@@ -1,71 +1,71 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { toast } from 'sonner'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
-  const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [pin, setPin] = useState('')
-  const [shopMode, setShopMode] = useState('existing')
-  const [shopId, setShopId] = useState('')
-  const [shopName, setShopName] = useState('')
-  const [deptMode, setDeptMode] = useState('existing')
-  const [departmentId, setDepartmentId] = useState('')
-  const [departmentName, setDepartmentName] = useState('')
-  const [shops, setShops] = useState([])
-  const [departments, setDepartments] = useState([])
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [pin, setPin] = useState("");
+  const [shopMode, setShopMode] = useState("existing");
+  const [shopId, setShopId] = useState("");
+  const [shopName, setShopName] = useState("");
+  const [deptMode, setDeptMode] = useState("existing");
+  const [departmentId, setDepartmentId] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
+  const [shops, setShops] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch('/api/shops')
+    fetch("/api/shops")
       .then((r) => r.json())
       .then(setShops)
-      .catch(() => {})
-  }, [])
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
-    if (shopMode === 'existing' && shopId) {
-      fetch('/api/departments')
+    if (shopMode === "existing" && shopId) {
+      fetch("/api/departments")
         .then((r) => r.json())
         .then(setDepartments)
-        .catch(() => {})
+        .catch(() => {});
     } else {
-      setDepartments([])
-      setDepartmentId('')
+      setDepartments([]);
+      setDepartmentId("");
     }
-  }, [shopMode, shopId])
+  }, [shopMode, shopId]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      const body = { username, pin }
-      if (shopMode === 'new') body.shopName = shopName
-      else body.shopId = shopId
+      const body = { username, pin };
+      if (shopMode === "new") body.shopName = shopName;
+      else body.shopId = shopId;
 
-      if (deptMode === 'new') body.departmentName = departmentName
-      else if (departmentId) body.departmentId = departmentId
+      if (deptMode === "new") body.departmentName = departmentName;
+      else if (departmentId) body.departmentId = departmentId;
 
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-      })
+      });
       if (!res.ok) {
-        const data = await res.json()
-        toast.error(data.error || 'Registration failed')
-        return
+        const data = await res.json();
+        toast.error(data.error || "Registration failed");
+        return;
       }
-      router.push('/shifts')
+      router.push("/shifts");
     } catch {
-      toast.error('Network error')
+      toast.error("Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
@@ -109,7 +109,11 @@ export default function RegisterForm() {
           <select value={shopId} onChange={(e) => setShopId(e.target.value)} required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Select a shop...</option>
-            {shops.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {shops.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
           </select>
         ) : (
           <input type="text" value={shopName} onChange={(e) => setShopName(e.target.value)} required
@@ -134,7 +138,11 @@ export default function RegisterForm() {
           <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">None</option>
-            {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
           </select>
         ) : (
           <input type="text" value={departmentName} onChange={(e) => setDepartmentName(e.target.value)}
@@ -143,14 +151,19 @@ export default function RegisterForm() {
         )}
       </div>
 
-      <button type="submit" disabled={loading}
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-        {loading ? 'Creating account...' : 'Create account'}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {loading ? "Creating account..." : "Create account"}
       </button>
       <p className="text-center text-sm text-gray-500">
-        Already have an account?{' '}
-        <Link href="/login" className="text-blue-600 hover:underline">Sign in</Link>
+        Already have an account?{" "}
+        <Link href="/login" className="text-blue-600 hover:underline">
+          Sign in
+        </Link>
       </p>
     </form>
-  )
+  );
 }

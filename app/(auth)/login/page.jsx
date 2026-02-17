@@ -1,6 +1,6 @@
-import LoginForm from '@/components/auth/LoginForm'
+import LoginForm from "@/components/auth/LoginForm";
 
-export const metadata = { title: 'Login — Lunchbox' }
+export const metadata = { title: "Login — Lunchbox" };
 
 export default function LoginPage() {
   return (
@@ -13,5 +13,5 @@ export default function LoginPage() {
         <LoginForm />
       </div>
     </div>
-  )
+  );
 }

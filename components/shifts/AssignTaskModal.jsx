@@ -1,58 +1,67 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { toast } from 'sonner'
-import Modal from '@/components/ui/Modal'
-import Button from '@/components/ui/Button'
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import Modal from "@/components/ui/Modal";
+import Button from "@/components/ui/Button";
 
-export default function AssignTaskModal({ isOpen, onClose, shift, onComplete }) {
-  const [tasks, setTasks] = useState([])
-  const [selectedTaskId, setSelectedTaskId] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [fetching, setFetching] = useState(true)
+export default function AssignTaskModal({
+  isOpen,
+  onClose,
+  shift,
+  onComplete,
+}) {
+  const [tasks, setTasks] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    if (!isOpen) return
-    setFetching(true)
-    fetch('/api/tasks')
+    if (!isOpen) return;
+    setFetching(true);
+    fetch("/api/tasks")
       .then((r) => r.json())
       .then((all) => {
-        setTasks(all.filter((t) => t.status === 'PENDING'))
+        setTasks(all.filter((t) => t.status === "PENDING"));
       })
       .catch(() => {})
-      .finally(() => setFetching(false))
-  }, [isOpen])
+      .finally(() => setFetching(false));
+  }, [isOpen]);
 
   const handleAssign = async () => {
     if (!selectedTaskId) {
-      toast.error('Select a task to assign')
-      return
+      toast.error("Select a task to assign");
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch(`/api/tasks/${selectedTaskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           assignedAssociateId: shift.associateId,
-          status: 'IN_PROGRESS',
+          status: "IN_PROGRESS",
         }),
-      })
+      });
       if (!res.ok) {
-        toast.error('Failed to assign task')
-        return
+        toast.error("Failed to assign task");
+        return;
       }
-      toast.success('Task assigned')
-      onComplete()
+      toast.success("Task assigned");
+      onComplete();
     } catch {
-      toast.error('Network error')
+      toast.error("Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Assign Task — ${shift.associate?.name}`}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Assign Task — ${shift.associate?.name}`}
+    >
       <div className="space-y-4">
         {fetching ? (
           <p className="text-sm text-gray-500">Loading tasks...</p>
@@ -79,12 +88,17 @@ export default function AssignTaskModal({ isOpen, onClose, shift, onComplete }) 
           </div>
         )}
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="secondary" onClick={onClose} disabled={loading}>Cancel</Button>
-          <Button onClick={handleAssign} disabled={loading || fetching || tasks.length === 0}>
-            {loading ? 'Assigning...' : 'Assign Task'}
+          <Button variant="secondary" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAssign}
+            disabled={loading || fetching || tasks.length === 0}
+          >
+            {loading ? "Assigning..." : "Assign Task"}
           </Button>
         </div>
       </div>
     </Modal>
-  )
+  );
 }

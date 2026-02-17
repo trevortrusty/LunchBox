@@ -5,20 +5,20 @@ import { format } from "date-fns";
 import SendToBreakModal from "./SendToBreakModal";
 import ReturnFromBreakModal from "./ReturnFromBreakModal";
 import ResetBreakStatusModal from "./ResetBreakStatusModal";
-import ChangeRoleModal from "./ChangeRoleModal";
+import EditShiftModal from "./EditShiftModal";
 import AssignTaskModal from "./AssignTaskModal";
 import DeleteShiftModal from "./DeleteShiftModal";
 
 function getRestButtonStyle(status) {
   switch (status) {
     case "DUE":
-      return "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200";
+      return "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-900";
     case "OUT":
-      return "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200";
+      return "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900";
     case "COMPLETED":
-      return "bg-green-100 text-green-800 border-green-300 cursor-default";
+      return "bg-green-100 text-green-800 border-green-300 cursor-default dark:bg-green-950 dark:text-green-300 dark:border-green-800";
     default:
-      return "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200";
+      return "bg-[var(--color-bg-subtle)] text-[var(--color-text-muted)] border-[var(--color-input-border)] hover:bg-[var(--color-border)]";
   }
 }
 
@@ -37,24 +37,24 @@ function getRestButtonLabel(rest) {
   }
 }
 
-function getRowStyle(shift) {
+function getRowBg(shift) {
   const rests = shift.restPeriods || [];
   const hasOut = rests.some((r) => r.status === "OUT");
   const hasDue = rests.some((r) => r.status === "DUE");
   const allDone =
     rests.length > 0 && rests.every((r) => r.status === "COMPLETED");
 
-  if (hasOut) return "bg-blue-50";
-  if (hasDue) return "bg-amber-50";
-  if (allDone) return "bg-green-50";
-  return "bg-white";
+  if (hasOut) return "var(--color-row-out)";
+  if (hasDue) return "var(--color-row-due)";
+  if (allDone) return "var(--color-row-done)";
+  return "var(--color-row-default)";
 }
 
 export default function ShiftRow({ shift, onRefresh }) {
   const [sendBreakRest, setSendBreakRest] = useState(null);
   const [returnBreakRest, setReturnBreakRest] = useState(null);
   const [resetBreakRest, setResetBreakRest] = useState(null);
-  const [showChangeRole, setShowChangeRole] = useState(false);
+  const [showEditShift, setShowEditShift] = useState(false);
   const [showAssignTask, setShowAssignTask] = useState(false);
   const [showDeleteShift, setShowDeleteShift] = useState(false);
   const rests = shift.restPeriods || [];
@@ -71,18 +71,22 @@ export default function ShiftRow({ shift, onRefresh }) {
 
   return (
     <>
-      <tr className={`${getRowStyle(shift)} transition-colors`}>
+      <tr className="transition-colors" style={{ background: getRowBg(shift) }}>
         <td className="px-4 py-3">
-          <div className="font-medium text-gray-900">
+          <div className="font-medium text-[var(--color-text-base)]">
             {shift.associate?.name}
           </div>
           {shift.department && (
-            <div className="text-xs text-gray-400">{shift.department.name}</div>
+            <div className="text-xs text-[var(--color-text-subtle)]">
+              {shift.department.name}
+            </div>
           )}
         </td>
-        <td className="px-4 py-3 text-gray-600">
+        <td className="px-4 py-3 text-[var(--color-text-muted)]">
           {shift.currentRole || (
-            <span className="text-gray-300 italic">No role</span>
+            <span className="text-[var(--color-text-subtle)] italic">
+              No role
+            </span>
           )}
           {shift.temporarilyCoveringShiftId && (
             <div className="text-xs text-blue-500">Covering another</div>
@@ -93,21 +97,22 @@ export default function ShiftRow({ shift, onRefresh }) {
             </div>
           )}
         </td>
-        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+        <td className="px-4 py-3 text-[var(--color-text-muted)] whitespace-nowrap">
           {format(new Date(shift.startTime), "h:mm a")} –{" "}
           {format(new Date(shift.endTime), "h:mm a")}
         </td>
         <td className="px-4 py-3">
           <div className="flex flex-wrap gap-1">
             {rests.length === 0 ? (
-              <span className="text-gray-300 text-xs italic">None</span>
+              <span className="text-[var(--color-text-subtle)] text-xs italic">
+                None
+              </span>
             ) : (
               rests.map((rest) => (
                 <button
                   key={rest.id}
                   onClick={() => handleRestClick(rest)}
                   className={`text-xs px-2 py-1 rounded border font-medium transition-colors ${getRestButtonStyle(rest.status)}`}
-                  // disabled={rest.status === "COMPLETED"}
                 >
                   {getRestButtonLabel(rest)}
                 </button>
@@ -118,10 +123,10 @@ export default function ShiftRow({ shift, onRefresh }) {
         <td className="px-4 py-3">
           <div className="flex gap-1">
             <button
-              onClick={() => setShowChangeRole(true)}
-              className="text-xs px-2 py-1 text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              onClick={() => setShowEditShift(true)}
+              className="text-xs px-2 py-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-subtle)] rounded transition-colors"
             >
-              Role
+              Edit
             </button>
             <button
               onClick={() => setShowAssignTask(true)}
@@ -178,13 +183,13 @@ export default function ShiftRow({ shift, onRefresh }) {
         />
       )}
 
-      {showChangeRole && (
-        <ChangeRoleModal
-          isOpen={showChangeRole}
-          onClose={() => setShowChangeRole(false)}
+      {showEditShift && (
+        <EditShiftModal
+          isOpen={showEditShift}
+          onClose={() => setShowEditShift(false)}
           shift={shift}
           onComplete={() => {
-            setShowChangeRole(false);
+            setShowEditShift(false);
             onRefresh();
           }}
         />

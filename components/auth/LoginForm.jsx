@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export default function LoginForm() {
-  const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [pin, setPin] = useState('')
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [pin, setPin] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, pin }),
-      })
+      });
       if (!res.ok) {
-        const data = await res.json()
-        toast.error(data.error || 'Login failed')
-        return
+        const data = await res.json();
+        toast.error(data.error || "Login failed");
+        return;
       }
-      router.push('/shifts')
+      router.push("/shifts");
     } catch {
-      toast.error('Network error')
+      toast.error("Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
@@ -65,14 +65,14 @@ export default function LoginForm() {
         disabled={loading}
         className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {loading ? 'Signing in...' : 'Sign in'}
+        {loading ? "Signing in..." : "Sign in"}
       </button>
       <p className="text-center text-sm text-gray-500">
-        No account?{' '}
+        No account?{" "}
         <Link href="/register" className="text-blue-600 hover:underline">
           Register
         </Link>
       </p>
     </form>
-  )
+  );
 }

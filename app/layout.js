@@ -3,14 +3,14 @@ import { Toaster } from 'sonner'
 import './globals.css'
 
 const geist = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
 export const metadata = {
-  title: 'Lunchbox — Shift & Task Management',
-  description: 'Retail shift and task management system',
-}
+  title: "Lunchbox — Shift & Task Management",
+  description: "Retail shift and task management system",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -20,5 +20,5 @@ export default function RootLayout({ children }) {
         <Toaster position="top-right" richColors />
       </body>
     </html>
-  )
+  );
 }

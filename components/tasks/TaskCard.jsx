@@ -1,22 +1,22 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { format } from 'date-fns'
-import { toast } from 'sonner'
+import { useState } from "react";
+import { format } from "date-fns";
+import { toast } from "sonner";
 
 const STATUS_TRANSITIONS = {
-  PENDING: ['IN_PROGRESS', 'CANCELLED'],
-  IN_PROGRESS: ['COMPLETED', 'CANCELLED', 'PENDING'],
-  COMPLETED: ['PENDING'],
-  CANCELLED: ['PENDING'],
-}
+  PENDING: ["IN_PROGRESS", "CANCELLED"],
+  IN_PROGRESS: ["COMPLETED", "CANCELLED", "PENDING"],
+  COMPLETED: ["PENDING"],
+  CANCELLED: ["PENDING"],
+};
 
 const STATUS_LABELS = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In Progress',
-  COMPLETED: 'Completed',
-  CANCELLED: 'Cancelled',
-}
+  PENDING: "Pending",
+  IN_PROGRESS: "In Progress",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
+};
 
 const STATUS_BADGE = {
   PENDING: 'bg-gray-100 text-gray-600',
@@ -26,30 +26,30 @@ const STATUS_BADGE = {
 }
 
 export default function TaskCard({ task, onRefresh }) {
-  const [loading, setLoading] = useState(false)
-  const [expanded, setExpanded] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const handleStatusChange = async (newStatus) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
-      })
+      });
       if (!res.ok) {
-        toast.error('Failed to update task')
-        return
+        toast.error("Failed to update task");
+        return;
       }
-      onRefresh()
+      onRefresh();
     } catch {
-      toast.error('Network error')
+      toast.error("Network error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const nextStatuses = STATUS_TRANSITIONS[task.status] || []
+  const nextStatuses = STATUS_TRANSITIONS[task.status] || [];
 
   return (
     <div
@@ -65,7 +65,7 @@ export default function TaskCard({ task, onRefresh }) {
 
       {task.scheduledTime && (
         <p className="text-xs text-gray-400 mt-1">
-          {format(new Date(task.scheduledTime), 'MMM d, h:mm a')}
+          {format(new Date(task.scheduledTime), "MMM d, h:mm a")}
         </p>
       )}
 
@@ -90,5 +90,5 @@ export default function TaskCard({ task, onRefresh }) {
         </div>
       )}
     </div>
-  )
+  );
 }
