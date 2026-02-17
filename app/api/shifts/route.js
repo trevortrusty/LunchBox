@@ -21,10 +21,12 @@ export async function GET(request) {
 
   let dateFilter = {}
   if (dateParam) {
-    const start = new Date(dateParam)
-    start.setHours(0, 0, 0, 0)
-    const end = new Date(dateParam)
-    end.setHours(23, 59, 59, 999)
+    // Parse as local date. new Date('YYYY-MM-DD') parses as UTC midnight which is the
+    // previous day in negative-offset timezones (e.g. EST). Using year/month/day
+    // components forces local-timezone interpretation.
+    const [year, month, day] = dateParam.split('-').map(Number)
+    const start = new Date(year, month - 1, day, 0, 0, 0, 0)
+    const end = new Date(year, month - 1, day, 23, 59, 59, 999)
     dateFilter = {
       startTime: { gte: start, lte: end },
     }

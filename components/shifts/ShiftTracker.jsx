@@ -8,11 +8,22 @@ import Button from '@/components/ui/Button'
 
 export default function ShiftTracker() {
   const [shifts, setShifts] = useState([])
-  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'))
+  const [selectedDate, setSelectedDate] = useState('')
   const [loading, setLoading] = useState(true)
+
+  // Initialize to client's local date after hydration (SSR runs in UTC, not the user's timezone).
+  // Uses native Date methods instead of date-fns to guarantee local-timezone resolution.
+  useEffect(() => {
+    const now = new Date()
+    const y = now.getFullYear()
+    const m = String(now.getMonth() + 1).padStart(2, '0')
+    const d = String(now.getDate()).padStart(2, '0')
+    setSelectedDate(`${y}-${m}-${d}`)
+  }, [])
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const fetchShifts = useCallback(async () => {
+    if (!selectedDate) return
     try {
       const res = await fetch(`/api/shifts?date=${selectedDate}`)
       if (res.ok) {
@@ -43,7 +54,7 @@ export default function ShiftTracker() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Shifts</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {format(new Date(selectedDate + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
+            {selectedDate && format(new Date(selectedDate + 'T12:00:00'), 'EEEE, MMMM d, yyyy')}
           </p>
         </div>
         <div className="flex items-center gap-3">
