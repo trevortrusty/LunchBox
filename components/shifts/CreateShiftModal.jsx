@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
+import RolePicker from "./RolePicker";
 
 function todayLocal() {
   const now = new Date();
@@ -217,13 +218,7 @@ export default function CreateShiftModal({
           <label className="block text-sm font-medium mb-1 text-[var(--color-text-base)]">
             Role (optional)
           </label>
-          <input
-            type="text"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            placeholder="e.g. Cashier, Floor Lead"
-            className={inputClass}
-          />
+          <RolePicker value={role} onChange={setRole} isOpen={isOpen} />
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
