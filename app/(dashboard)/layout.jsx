@@ -72,7 +72,14 @@ export default function DashboardLayout({ children }) {
       <nav className="bg-white border-b border-gray-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <span className="font-bold text-gray-900 text-lg">Lunchbox</span>
+            <span className="font-bold text-gray-900 text-lg">
+              Lunchbox
+              {process.env.NEXT_PUBLIC_APP_ENV === "dev" && (
+                <span className="ml-1.5 text-xs font-normal text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+                  dev
+                </span>
+              )}
+            </span>
             <div className="flex gap-1">
               <Link
                 href={tabHref("/shifts")}
