@@ -1,7 +1,12 @@
-import ShiftTracker from '@/components/shifts/ShiftTracker'
+import { Suspense } from "react";
+import ShiftTracker from "@/components/shifts/ShiftTracker";
 
-export const metadata = { title: 'Shifts — Lunchbox' }
+export const metadata = { title: "Shifts — Lunchbox" };
 
 export default function ShiftsPage() {
-  return <ShiftTracker />
+  return (
+    <Suspense>
+      <ShiftTracker />
+    </Suspense>
+  );
 }
