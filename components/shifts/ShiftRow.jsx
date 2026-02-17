@@ -7,6 +7,7 @@ import ReturnFromBreakModal from "./ReturnFromBreakModal";
 import ResetBreakStatusModal from "./ResetBreakStatusModal";
 import ChangeRoleModal from "./ChangeRoleModal";
 import AssignTaskModal from "./AssignTaskModal";
+import DeleteShiftModal from "./DeleteShiftModal";
 
 function getRestButtonStyle(status) {
   switch (status) {
@@ -55,7 +56,7 @@ export default function ShiftRow({ shift, onRefresh }) {
   const [resetBreakRest, setResetBreakRest] = useState(null);
   const [showChangeRole, setShowChangeRole] = useState(false);
   const [showAssignTask, setShowAssignTask] = useState(false);
-
+  const [showDeleteShift, setShowDeleteShift] = useState(false);
   const rests = shift.restPeriods || [];
 
   const handleRestClick = (rest) => {
@@ -128,6 +129,12 @@ export default function ShiftRow({ shift, onRefresh }) {
             >
               Task
             </button>
+            <button
+              onClick={() => setShowDeleteShift(true)}
+              className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+            >
+              Delete
+            </button>
           </div>
         </td>
       </tr>
@@ -190,6 +197,18 @@ export default function ShiftRow({ shift, onRefresh }) {
           shift={shift}
           onComplete={() => {
             setShowAssignTask(false);
+            onRefresh();
+          }}
+        />
+      )}
+
+      {showDeleteShift && (
+        <DeleteShiftModal
+          isOpen={showDeleteShift}
+          onClose={() => setShowDeleteShift(false)}
+          shift={shift}
+          onComplete={() => {
+            setShowDeleteShift(false);
             onRefresh();
           }}
         />
