@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum RestType {
+  BREAK
+  LUNCH
+}
+
+enum RestStatus {
+  SCHEDULED
+  DUE
+  OUT
+  COMPLETED
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Shop {
+  id          String       @id @default(cuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  departments Department[]
+  users       User[]
+  associates  Associate[]
+  shifts      Shift[]
+  taskTemplates TaskTemplate[]
+  taskInstances TaskInstance[]
+  roles       Role[]
+}
+
+model Department {
+  id         String      @id @default(cuid())
+  name       String
+  shopId     String
+  shop       Shop        @relation(fields: [shopId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  users      User[]
+  associates Associate[]
+  shifts     Shift[]
+
+  @@unique([name, shopId])
+}
+
+model Role {
+  id        String   @id @default(cuid())
+  name      String
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, shopId])
+}
+
+model User {
+  id           String     @id @default(cuid())
+  username     String     @unique
+  pinHash      String
+  shopId       String
+  shop         Shop       @relation(fields: [shopId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Associate {
+  id           String      @id @default(cuid())
+  name         String
+  shopId       String
+  shop         Shop        @relation(fields: [shopId], references: [id])
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  shifts       Shift[]
+  relievedRestPeriods RestPeriod[] @relation("ReliefAssociate")
+  assignedTasks TaskInstance[]
+}
+
+model Shift {
+  id                        String      @id @default(cuid())
+  shopId                    String
+  shop                      Shop        @relation(fields: [shopId], references: [id])
+  associateId               String
+  associate                 Associate   @relation(fields: [associateId], references: [id])
+  departmentId              String?
+  department                Department? @relation(fields: [departmentId], references: [id])
+  startTime                 DateTime
+  endTime                   DateTime
+  status                    ShiftStatus @default(SCHEDULED)
+  originalRole              String?
+  currentRole               String?
+  temporarilyCoveringShiftId String?    @unique
+  coveringShift             Shift?      @relation("ShiftCoverage", fields: [temporarilyCoveringShiftId], references: [id])
+  coveredByShift            Shift?      @relation("ShiftCoverage")
+  restPeriods               RestPeriod[]
+  createdAt                 DateTime    @default(now())
+  updatedAt                 DateTime    @updatedAt
+}
+
+model RestPeriod {
+  id                    String     @id @default(cuid())
+  shiftId               String
+  shift                 Shift      @relation(fields: [shiftId], references: [id])
+  type                  RestType
+  scheduledTime         DateTime
+  actualStartTime       DateTime?
+  actualEndTime         DateTime?
+  status                RestStatus @default(SCHEDULED)
+  relievedByAssociateId String?
+  relievedByAssociate   Associate? @relation("ReliefAssociate", fields: [relievedByAssociateId], references: [id])
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+}
+
+model TaskTemplate {
+  id             String         @id @default(cuid())
+  name           String
+  shopId         String
+  shop           Shop           @relation(fields: [shopId], references: [id])
+  recurrenceRule String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  taskInstances  TaskInstance[]
+}
+
+model TaskInstance {
+  id                  String       @id @default(cuid())
+  name                String
+  shopId              String
+  shop                Shop         @relation(fields: [shopId], references: [id])
+  templateId          String?
+  template            TaskTemplate? @relation(fields: [templateId], references: [id])
+  scheduledTime       DateTime?
+  assignedAssociateId String?
+  assignedAssociate   Associate?   @relation(fields: [assignedAssociateId], references: [id])
+  status              TaskStatus   @default(PENDING)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
