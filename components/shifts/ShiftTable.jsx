@@ -40,13 +40,13 @@ export default function ShiftTable({ shifts, onRefresh }) {
             <th className="text-left px-4 py-3 font-medium text-gray-500">
               Associate
             </th>
-            <th className="text-left px-4 py-3 font-medium text-gray-500">
+            <th className="hidden sm:table-cell text-left px-4 py-3 font-medium text-gray-500">
               Role
             </th>
-            <th className="text-left px-4 py-3 font-medium text-gray-500">
+            <th className="hidden sm:table-cell text-left px-4 py-3 font-medium text-gray-500">
               Time
             </th>
-            <th className="text-left px-4 py-3 font-medium text-gray-500">
+            <th className="hidden sm:table-cell text-left px-4 py-3 font-medium text-gray-500">
               Rest Periods
             </th>
             <th className="text-left px-4 py-3 font-medium text-gray-500">

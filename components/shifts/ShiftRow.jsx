@@ -50,6 +50,29 @@ function getRowBg(shift) {
   return "var(--color-row-default)";
 }
 
+function RestButtons({ rests, onRestClick }) {
+  if (rests.length === 0) {
+    return (
+      <span className="text-[var(--color-text-subtle)] text-xs italic">
+        None
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-1">
+      {rests.map((rest) => (
+        <button
+          key={rest.id}
+          onClick={() => onRestClick(rest)}
+          className={`text-xs px-2 py-1 rounded border font-medium transition-colors ${getRestButtonStyle(rest.status)}`}
+        >
+          {getRestButtonLabel(rest)}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function ShiftRow({ shift, onRefresh }) {
   const [sendBreakRest, setSendBreakRest] = useState(null);
   const [returnBreakRest, setReturnBreakRest] = useState(null);
@@ -69,9 +92,12 @@ export default function ShiftRow({ shift, onRefresh }) {
     }
   };
 
+  const timeStr = `${format(new Date(shift.startTime), "h:mm a")} – ${format(new Date(shift.endTime), "h:mm a")}`;
+
   return (
     <>
       <tr className="transition-colors" style={{ background: getRowBg(shift) }}>
+        {/* Associate — always visible. On mobile also shows time + rest buttons */}
         <td className="px-4 py-3">
           <div className="font-medium text-[var(--color-text-base)]">
             {shift.associate?.name}
@@ -81,8 +107,17 @@ export default function ShiftRow({ shift, onRefresh }) {
               {shift.department.name}
             </div>
           )}
+          {/* Mobile-only: time + rest buttons stacked under name */}
+          <div className="sm:hidden mt-1.5 space-y-1.5">
+            <div className="text-xs text-[var(--color-text-muted)]">
+              {timeStr}
+            </div>
+            <RestButtons rests={rests} onRestClick={handleRestClick} />
+          </div>
         </td>
-        <td className="px-4 py-3 text-[var(--color-text-muted)]">
+
+        {/* Role — hidden on mobile */}
+        <td className="hidden sm:table-cell px-4 py-3 text-[var(--color-text-muted)]">
           {shift.currentRole || (
             <span className="text-[var(--color-text-subtle)] italic">
               No role
@@ -97,29 +132,18 @@ export default function ShiftRow({ shift, onRefresh }) {
             </div>
           )}
         </td>
-        <td className="px-4 py-3 text-[var(--color-text-muted)] whitespace-nowrap">
-          {format(new Date(shift.startTime), "h:mm a")} –{" "}
-          {format(new Date(shift.endTime), "h:mm a")}
+
+        {/* Time — hidden on mobile (shown inline above) */}
+        <td className="hidden sm:table-cell px-4 py-3 text-[var(--color-text-muted)] whitespace-nowrap">
+          {timeStr}
         </td>
-        <td className="px-4 py-3">
-          <div className="flex flex-wrap gap-1">
-            {rests.length === 0 ? (
-              <span className="text-[var(--color-text-subtle)] text-xs italic">
-                None
-              </span>
-            ) : (
-              rests.map((rest) => (
-                <button
-                  key={rest.id}
-                  onClick={() => handleRestClick(rest)}
-                  className={`text-xs px-2 py-1 rounded border font-medium transition-colors ${getRestButtonStyle(rest.status)}`}
-                >
-                  {getRestButtonLabel(rest)}
-                </button>
-              ))
-            )}
-          </div>
+
+        {/* Rest Periods — hidden on mobile (shown inline above) */}
+        <td className="hidden sm:table-cell px-4 py-3">
+          <RestButtons rests={rests} onRestClick={handleRestClick} />
         </td>
+
+        {/* Actions — always visible */}
         <td className="px-4 py-3">
           <div className="flex gap-1">
             <button
