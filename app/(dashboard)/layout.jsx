@@ -102,6 +102,11 @@ export default function DashboardLayout({ children }) {
     router.push("/login");
   };
 
+  const handleManage = () => {
+    setMenuOpen(false);
+    router.push("/manage");
+  };
+
   // Build href for nav tabs, preserving the current date param
   const tabHref = (path) => (date ? `${path}?date=${date}` : path);
 
@@ -166,6 +171,14 @@ export default function DashboardLayout({ children }) {
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                  <Link
+                    href="/manage"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Manage
+                  </Link>
+                  <div className="border-t border-gray-100 my-1" />
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
