@@ -22,7 +22,13 @@ function toLocalTime(isoString) {
   return `${h}:${min}`;
 }
 
-export default function EditShiftModal({ isOpen, onClose, shift, onComplete }) {
+export default function EditShiftModal({
+  isOpen,
+  onClose,
+  shift,
+  onComplete,
+  onDeleteRequest,
+}) {
   const [associates, setAssociates] = useState([]);
   const [associateId, setAssociateId] = useState(shift.associateId);
   const [date, setDate] = useState(toLocalDate(shift.startTime));
@@ -172,18 +178,29 @@ export default function EditShiftModal({ isOpen, onClose, shift, onComplete }) {
           <RolePicker value={role} onChange={setRole} isOpen={isOpen} />
         </div>
 
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-between gap-2 pt-2">
           <Button
             variant="secondary"
             type="button"
-            onClick={onClose}
+            onClick={onDeleteRequest}
             disabled={saving}
+            className="text-red-600 hover:text-red-700"
           >
-            Cancel
+            Delete Shift
           </Button>
-          <Button type="submit" disabled={saving || fetching}>
-            {saving ? "Saving..." : "Save Changes"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={saving || fetching}>
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>

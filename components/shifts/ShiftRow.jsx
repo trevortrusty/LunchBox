@@ -12,11 +12,11 @@ import DeleteShiftModal from "./DeleteShiftModal";
 function getRestButtonStyle(status) {
   switch (status) {
     case "DUE":
-      return "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800 dark:hover:bg-amber-900";
+      return "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200";
     case "OUT":
-      return "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900";
+      return "bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200";
     case "COMPLETED":
-      return "bg-green-100 text-green-800 border-green-300 cursor-default dark:bg-green-950 dark:text-green-300 dark:border-green-800";
+      return "bg-green-100 text-green-800 border-green-300 cursor-default";
     default:
       return "bg-[var(--color-bg-subtle)] text-[var(--color-text-muted)] border-[var(--color-input-border)] hover:bg-[var(--color-border)]";
   }
@@ -63,7 +63,10 @@ function RestButtons({ rests, onRestClick }) {
       {rests.map((rest) => (
         <button
           key={rest.id}
-          onClick={() => onRestClick(rest)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRestClick(rest);
+          }}
           className={`text-xs px-2 py-1 rounded border font-medium transition-colors ${getRestButtonStyle(rest.status)}`}
         >
           {getRestButtonLabel(rest)}
@@ -73,7 +76,43 @@ function RestButtons({ rests, onRestClick }) {
   );
 }
 
-export default function ShiftRow({ shift, onRefresh }) {
+function PencilIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="w-4 h-4"
+    >
+      <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+    </svg>
+  );
+}
+
+function TaskIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="w-4 h-4"
+    >
+      <path
+        fillRule="evenodd"
+        d="M6 4.75A.75.75 0 016.75 4h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 4.75zM6 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75A.75.75 0 016 10zm0 5.25a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H6.75a.75.75 0 01-.75-.75zM1.99 4.75a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 15.25a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1v-.01zM1.99 10a1 1 0 011-1H3a1 1 0 011 1v.01a1 1 0 01-1 1h-.01a1 1 0 01-1-1V10z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+export default function ShiftRow({
+  shift,
+  onRefresh,
+  isSelected,
+  onSelect,
+  onDeselect,
+}) {
   const [sendBreakRest, setSendBreakRest] = useState(null);
   const [returnBreakRest, setReturnBreakRest] = useState(null);
   const [resetBreakRest, setResetBreakRest] = useState(null);
@@ -92,11 +131,29 @@ export default function ShiftRow({ shift, onRefresh }) {
     }
   };
 
+  const handleRowClick = () => {
+    onSelect();
+  };
+
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    setShowEditShift(true);
+  };
+
+  const handleTaskClick = (e) => {
+    e.stopPropagation();
+    setShowAssignTask(true);
+  };
+
   const timeStr = `${format(new Date(shift.startTime), "h:mm a")} – ${format(new Date(shift.endTime), "h:mm a")}`;
 
   return (
     <>
-      <tr className="transition-colors" style={{ background: getRowBg(shift) }}>
+      <tr
+        className="transition-colors cursor-pointer"
+        style={{ background: getRowBg(shift) }}
+        onClick={handleRowClick}
+      >
         {/* Associate — always visible. On mobile also shows time + rest buttons */}
         <td className="px-4 py-3">
           <div className="font-medium text-[var(--color-text-base)]">
@@ -133,38 +190,36 @@ export default function ShiftRow({ shift, onRefresh }) {
           )}
         </td>
 
-        {/* Time — hidden on mobile (shown inline above) */}
+        {/* Time — hidden on mobile */}
         <td className="hidden sm:table-cell px-4 py-3 text-[var(--color-text-muted)] whitespace-nowrap">
           {timeStr}
         </td>
 
-        {/* Rest Periods — hidden on mobile (shown inline above) */}
+        {/* Rest Periods — hidden on mobile */}
         <td className="hidden sm:table-cell px-4 py-3">
           <RestButtons rests={rests} onRestClick={handleRestClick} />
         </td>
 
-        {/* Actions — always visible */}
+        {/* Actions — icons appear when row is selected */}
         <td className="px-4 py-3">
-          <div className="flex gap-1">
-            <button
-              onClick={() => setShowEditShift(true)}
-              className="text-xs px-2 py-1 text-[var(--color-text-muted)] hover:bg-[var(--color-bg-subtle)] rounded transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => setShowAssignTask(true)}
-              className="text-xs px-2 py-1 text-purple-600 hover:bg-purple-50 rounded transition-colors"
-            >
-              Task
-            </button>
-            <button
-              onClick={() => setShowDeleteShift(true)}
-              className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-            >
-              Delete
-            </button>
-          </div>
+          {isSelected && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleEditClick}
+                className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                title="Edit shift"
+              >
+                <PencilIcon />
+              </button>
+              <button
+                onClick={handleTaskClick}
+                className="p-1.5 text-purple-500 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors"
+                title="Assign task"
+              >
+                <TaskIcon />
+              </button>
+            </div>
+          )}
         </td>
       </tr>
 
@@ -210,11 +265,19 @@ export default function ShiftRow({ shift, onRefresh }) {
       {showEditShift && (
         <EditShiftModal
           isOpen={showEditShift}
-          onClose={() => setShowEditShift(false)}
+          onClose={() => {
+            setShowEditShift(false);
+            onDeselect();
+          }}
           shift={shift}
           onComplete={() => {
             setShowEditShift(false);
+            onDeselect();
             onRefresh();
+          }}
+          onDeleteRequest={() => {
+            setShowEditShift(false);
+            setShowDeleteShift(true);
           }}
         />
       )}
@@ -222,10 +285,14 @@ export default function ShiftRow({ shift, onRefresh }) {
       {showAssignTask && (
         <AssignTaskModal
           isOpen={showAssignTask}
-          onClose={() => setShowAssignTask(false)}
+          onClose={() => {
+            setShowAssignTask(false);
+            onDeselect();
+          }}
           shift={shift}
           onComplete={() => {
             setShowAssignTask(false);
+            onDeselect();
             onRefresh();
           }}
         />
@@ -238,6 +305,7 @@ export default function ShiftRow({ shift, onRefresh }) {
           shift={shift}
           onComplete={() => {
             setShowDeleteShift(false);
+            onDeselect();
             onRefresh();
           }}
         />

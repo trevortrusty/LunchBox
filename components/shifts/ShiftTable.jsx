@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ShiftRow from "./ShiftRow";
 
 function groupByRole(shifts) {
@@ -20,6 +20,24 @@ function groupByRole(shifts) {
 }
 
 export default function ShiftTable({ shifts, onRefresh }) {
+  const [selectedShiftId, setSelectedShiftId] = useState(null);
+  const tableRef = useRef(null);
+
+  // Deselect when clicking outside the table
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (tableRef.current && !tableRef.current.contains(e.target)) {
+        setSelectedShiftId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("touchstart", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("touchstart", handleClick);
+    };
+  }, []);
+
   if (shifts.length === 0) {
     return (
       <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
@@ -33,7 +51,10 @@ export default function ShiftTable({ shifts, onRefresh }) {
   const groups = groupByRole(shifts);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div
+      ref={tableRef}
+      className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+    >
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-gray-50 border-b border-gray-200">
@@ -66,7 +87,18 @@ export default function ShiftTable({ shifts, onRefresh }) {
                 </td>
               </tr>
               {groupShifts.map((shift) => (
-                <ShiftRow key={shift.id} shift={shift} onRefresh={onRefresh} />
+                <ShiftRow
+                  key={shift.id}
+                  shift={shift}
+                  onRefresh={onRefresh}
+                  isSelected={selectedShiftId === shift.id}
+                  onSelect={() =>
+                    setSelectedShiftId(
+                      selectedShiftId === shift.id ? null : shift.id,
+                    )
+                  }
+                  onDeselect={() => setSelectedShiftId(null)}
+                />
               ))}
             </React.Fragment>
           ))}
