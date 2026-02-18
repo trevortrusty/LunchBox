@@ -164,12 +164,30 @@ export default function ShiftRow({
               {shift.department.name}
             </div>
           )}
-          {/* Mobile-only: time + rest buttons stacked under name */}
+          {/* Mobile-only: time, rest buttons, and action icons stacked under name */}
           <div className="sm:hidden mt-1.5 space-y-1.5">
             <div className="text-xs text-[var(--color-text-muted)]">
               {timeStr}
             </div>
             <RestButtons rests={rests} onRestClick={handleRestClick} />
+            {isSelected && (
+              <div className="flex gap-2 pt-0.5">
+                <button
+                  onClick={handleEditClick}
+                  className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                  title="Edit shift"
+                >
+                  <PencilIcon />
+                </button>
+                <button
+                  onClick={handleTaskClick}
+                  className="p-1.5 text-purple-500 hover:text-purple-700 hover:bg-purple-50 rounded transition-colors"
+                  title="Assign task"
+                >
+                  <TaskIcon />
+                </button>
+              </div>
+            )}
           </div>
         </td>
 
@@ -200,8 +218,8 @@ export default function ShiftRow({
           <RestButtons rests={rests} onRestClick={handleRestClick} />
         </td>
 
-        {/* Actions — icons appear when row is selected */}
-        <td className="px-4 py-3">
+        {/* Actions — icons appear when row is selected; hidden on mobile (shown inline above) */}
+        <td className="hidden sm:table-cell px-4 py-3">
           {isSelected && (
             <div className="flex gap-2">
               <button
