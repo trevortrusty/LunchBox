@@ -8,12 +8,13 @@ import { useReminderService } from "@/lib/business/reminder-service";
 function HamburgerIcon() {
   return (
     <svg
-      width="28"
-      height="22"
+      width="22"
+      height="17"
       viewBox="0 0 28 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
+      className="sm:w-7 sm:h-[22px]"
     >
       {/* Top bun — thicker, rounded */}
       <rect x="2" y="0" width="24" height="5" rx="2.5" fill="currentColor" />
@@ -114,21 +115,21 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-200 px-4 py-3">
+      <nav className="bg-white border-b border-gray-200 px-2 py-3 sm:px-4 sm:py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <span className="font-bold text-gray-900 text-lg">
-              Lunchbox
+          <div className="flex items-center gap-2 sm:gap-6">
+            <span className="font-bold text-gray-900 text-lg sm:text-xl">
+              LunchBox
               {process.env.NEXT_PUBLIC_APP_ENV === "dev" && (
-                <span className="ml-1.5 text-xs font-normal text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">
+                <span className="ml-1 text-[10px] sm:text-xs font-normal text-amber-600 bg-amber-100 px-1 py-0.5 sm:px-1.5 rounded">
                   dev
                 </span>
               )}
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-0.5 sm:gap-1">
               <Link
                 href={tabHref("/shifts")}
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm font-medium transition-colors ${
                   pathname.startsWith("/shifts")
                     ? "bg-blue-50 text-blue-700"
                     : "text-gray-600 hover:bg-gray-100"
@@ -138,7 +139,7 @@ export default function DashboardLayout({ children }) {
               </Link>
               <Link
                 href={tabHref("/tasks")}
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded text-xs sm:text-sm font-medium transition-colors ${
                   pathname.startsWith("/tasks")
                     ? "bg-blue-50 text-blue-700"
                     : "text-gray-600 hover:bg-gray-100"
@@ -148,17 +149,17 @@ export default function DashboardLayout({ children }) {
               </Link>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <input
               type="date"
               value={date}
               onChange={(e) => handleDateChange(e.target.value)}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-1.5 py-1 sm:px-3 sm:py-1.5 border border-gray-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 sm:w-auto"
             />
             <div ref={menuRef} className="relative">
               <button
                 onClick={() => setMenuOpen((o) => !o)}
-                className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 sm:p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
                 aria-label="Menu"
               >
                 <HamburgerIcon />
