@@ -54,8 +54,8 @@ export default function EditShiftModal({ isOpen, onClose, shift, onComplete }) {
     e.preventDefault();
     setSaving(true);
     try {
-      const startDateTime = `${date}T${startTime}:00`;
-      const endDateTime = `${date}T${endTime}:00`;
+      const startDateTime = new Date(`${date}T${startTime}:00`).toISOString();
+      const endDateTime = new Date(`${date}T${endTime}:00`).toISOString();
 
       if (new Date(endDateTime) <= new Date(startDateTime)) {
         toast.error("End time must be after start time");

@@ -81,8 +81,8 @@ export default function CreateShiftModal({
         return;
       }
 
-      const startDateTime = `${date}T${startTime}:00`;
-      const endDateTime = `${date}T${endTime}:00`;
+      const startDateTime = new Date(`${date}T${startTime}:00`).toISOString();
+      const endDateTime = new Date(`${date}T${endTime}:00`).toISOString();
 
       const res = await fetch("/api/shifts", {
         method: "POST",
