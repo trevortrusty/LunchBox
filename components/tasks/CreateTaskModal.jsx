@@ -42,7 +42,9 @@ export default function CreateTaskModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          scheduledTime: scheduledTime || undefined,
+          scheduledTime: scheduledTime
+            ? new Date(scheduledTime).toISOString()
+            : undefined,
           recurrenceRule: recurrenceRule || undefined,
           assignedAssociateId: assignedAssociateId || undefined,
           saveAsTemplate,
