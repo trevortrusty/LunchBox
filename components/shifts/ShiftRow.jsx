@@ -156,19 +156,22 @@ export default function ShiftRow({
       >
         {/* Associate — always visible. On mobile also shows time + rest buttons */}
         <td className="px-4 py-3">
-          <div className="font-medium text-[var(--color-text-base)]">
-            {shift.associate?.name}
+          {/* Name + time on the same line on mobile */}
+          <div className="flex items-baseline justify-between gap-2">
+            <div className="font-medium text-[var(--color-text-base)]">
+              {shift.associate?.name}
+            </div>
+            <div className="sm:hidden text-xs text-[var(--color-text-muted)] whitespace-nowrap shrink-0">
+              {timeStr}
+            </div>
           </div>
           {shift.department && (
             <div className="text-xs text-[var(--color-text-subtle)]">
               {shift.department.name}
             </div>
           )}
-          {/* Mobile-only: time, rest buttons, and action icons stacked under name */}
+          {/* Mobile-only: rest buttons and action icons below name/time row */}
           <div className="sm:hidden mt-1.5 space-y-1.5">
-            <div className="text-xs text-[var(--color-text-muted)]">
-              {timeStr}
-            </div>
             <RestButtons rests={rests} onRestClick={handleRestClick} />
             {isSelected && (
               <div className="flex gap-2 pt-0.5">
