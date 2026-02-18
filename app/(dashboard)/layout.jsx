@@ -1,9 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useReminderService } from "@/lib/business/reminder-service";
+
+function HamburgerIcon() {
+  return (
+    <svg
+      width="28"
+      height="22"
+      viewBox="0 0 28 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Top bun — thicker, rounded */}
+      <rect x="2" y="0" width="24" height="5" rx="2.5" fill="currentColor" />
+      {/* Patty — thinner, slightly wider */}
+      <rect
+        x="0"
+        y="8.5"
+        width="28"
+        height="3.5"
+        rx="1.75"
+        fill="currentColor"
+      />
+      {/* Bottom bun — thicker, rounded */}
+      <rect x="2" y="16" width="24" height="5" rx="2.5" fill="currentColor" />
+    </svg>
+  );
+}
 
 function todayLocal() {
   const now = new Date();
@@ -19,6 +46,8 @@ export default function DashboardLayout({ children }) {
   const searchParams = useSearchParams();
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   // Date lives in the URL so it persists across tab switches
   const date = searchParams.get("date") || "";
@@ -51,7 +80,23 @@ export default function DashboardLayout({ children }) {
 
   useReminderService(session?.shopId);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("touchstart", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("touchstart", handleClick);
+    };
+  }, []);
+
   const handleLogout = async () => {
+    setMenuOpen(false);
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
   };
@@ -110,15 +155,25 @@ export default function DashboardLayout({ children }) {
               onChange={(e) => handleDateChange(e.target.value)}
               className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {session && (
-              <span className="text-sm text-gray-500">{session.username}</span>
-            )}
-            <button
-              onClick={handleLogout}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              Sign out
-            </button>
+            <div ref={menuRef} className="relative">
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                aria-label="Menu"
+              >
+                <HamburgerIcon />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
