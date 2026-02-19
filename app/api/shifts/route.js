@@ -43,7 +43,7 @@ export async function GET(request) {
   const shifts = await prisma.shift.findMany({
     where: { shopId: session.shopId, ...dateFilter },
     include: {
-      associate: true,
+      associate: { include: { department: true } },
       department: true,
       restPeriods: { orderBy: { scheduledTime: "asc" } },
       coveringShift: { include: { associate: true } },

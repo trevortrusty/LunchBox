@@ -165,9 +165,9 @@ export default function ShiftRow({
               {timeStr}
             </div>
           </div>
-          {shift.department && (
+          {shift.associate?.department && (
             <div className="text-xs text-[var(--color-text-subtle)]">
-              {shift.department.name}
+              {shift.associate.department.name}
             </div>
           )}
           {/* Mobile-only: rest buttons and action icons below name/time row */}
